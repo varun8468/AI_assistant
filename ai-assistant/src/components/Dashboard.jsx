@@ -34,7 +34,7 @@ const Dashboard = () => {
     <div className="flex-1 flex flex-col bg-gray-900 p-6">
       {/* Header */}
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-white mb-2 tracking-wider">AI Assistant</h2>
+        <h2 className="text-3xl font-extrabold text-[#448cac] shadow-amber-50 mb-2 tracking-wider">AI Assistant</h2>
         <p className="text-gray-400">
           Enter your prompt below and let AI help you with your tasks
         </p>
@@ -46,8 +46,8 @@ const Dashboard = () => {
         {response && (
           <div className="mb-6 p-6 bg-gray-800 rounded-lg border border-gray-700">
             <div className="flex items-center gap-2 mb-3">
-              <MessageSquare size={18} className="text-purple-400" />
-              <span className="text-purple-400 font-medium">AI Response</span>
+              <MessageSquare size={18} className="text-[#42adc6]" />
+              <span className="text-[#42adc6] font-medium">AI Response</span>
             </div>
             <div className="text-gray-200 whitespace-pre-wrap leading-relaxed">
               {response}
@@ -59,8 +59,8 @@ const Dashboard = () => {
         {isLoading && (
           <div className="mb-6 p-6 bg-gray-800 rounded-lg border border-gray-700">
             <div className="flex items-center gap-3">
-              <Loader2 size={18} className="text-purple-400 animate-spin" />
-              <span className="text-purple-400 font-medium">AI is thinking...</span>
+              <Loader2 size={18} className="text-[#42adc6] animate-spin" />
+              <span className="text-[#42adc6] font-medium">AI is thinking...</span>
             </div>
           </div>
         )}
@@ -75,7 +75,7 @@ const Dashboard = () => {
                 onChange={(e) => setPrompt(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Enter your prompt here..."
-                className="w-full p-4 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 resize-none focus:outline-none focus:ring-1 focus:ring-purple-800 focus:border-transparent min-h-[120px] max-h-[300px]"
+                className="w-full p-4 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 resize-none focus:outline-none focus:ring-1 focus:ring-[#448cac] focus:border-transparent min-h-[120px] max-h-[300px]"
                 disabled={isLoading}
               />
               <div className="absolute bottom-3 right-3 text-gray-500 text-sm">
@@ -107,7 +107,7 @@ const Dashboard = () => {
               <button
                 type="submit"
                 disabled={!prompt.trim() || isLoading}
-                className="flex items-center gap-2 px-3 py-2 bg-purple-800 hover:bg-purple-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
+                className="flex items-center gap-2 px-3 py-2 bg-[#448cac] hover:bg-[#42adc6] disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
               >
                 {isLoading ? (
                   <>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { MessageSquare, Cpu, Wifi, WifiOff } from 'lucide-react';
 import { Dropdown } from './reusable/Dropdown';
+import Logo from '../assets/parkar.svg';
 
 export const Sidebar = ({ 
   selectedModel, 
@@ -34,13 +35,16 @@ export const Sidebar = ({
   ];
 
   return (
-    <div className="w-80 bg-gray-950 border-r border-gray-800 p-6 flex flex-col">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white mb-2">AI Assistant</h1>
-        <p className="text-gray-400 text-sm">Dummy Text</p>
-      </div>
+    <div className="w-80 bg-gray-950 border-r border-gray-800 flex flex-col">
+      
+        <div className="w-full flex justify-center border-b px-4 py-3">
+          <img width="150" alt="logo" src={Logo}></img>
+        </div>
+        
+    
 
-      <div className="space-y-6 flex-1">
+      <div className="space-y-6 flex-1 p-6">
+       
         {/* Model Selection */}
         <div>
           <label className="block text-gray-300 text-sm font-medium mb-3">
@@ -133,7 +137,14 @@ export const Sidebar = ({
             ))}
           </Dropdown>
         </div>
+        
       </div>
+
+      <h1 className="p-6 text-xl text-center font-extrabold text-slate-400 m-0 tracking-wide">
+        AI Assistant for Policy and SOP Discovery
+      </h1>        
+
+      
 
       {/* Status Indicator */}
       <div className="mt-6 p-4 bg-gray-800 rounded-lg border border-gray-700">
