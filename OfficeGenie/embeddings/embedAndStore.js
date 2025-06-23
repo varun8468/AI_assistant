@@ -33,7 +33,7 @@ export async function embedAndStoreDocs(relativePath) {
   await SupabaseVectorStore.fromDocuments(docs, embeddings, {
     client,
     tableName: 'documents',
-    queryName: 'match_documents'
+    queryName: 'match_hr_docs'
   })
 
   console.log('✅ Documents embedded and stored.');
