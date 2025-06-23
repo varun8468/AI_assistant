@@ -1,0 +1,28 @@
+# Node modules
+node_modules/
+
+# Logs
+logs/
+*.log
+
+# Environment files
+.env
+.env.*
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+
+# Yarn/PNPM/NPM logs
+.yarn/
+.pnpm-store/
+.npm/
+
+# Optional: exclude frontend/backend builds if not ignored in subfolders
+frontend/build/
+frontend/dist/
+backend/dist/
