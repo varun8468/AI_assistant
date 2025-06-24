@@ -43,4 +43,4 @@ Answer:`;
 }
 
 
-console.log(await askQuestion("what is notice period?"))
+console.log(await askQuestion("can you tell me about employee flexible benifits"))
