@@ -5,7 +5,7 @@ import { LLMStrategy } from "./LLMStrategy";
 export class OnlineLLM implements LLMStrategy {
   private model: any;
 
-  constructor(llmName: string = "gpt-3.5-turbo") {
+  constructor(llmName: string = "common") {
     const llmNameLower = llmName.toLowerCase();
 
     if (llmNameLower.startsWith("command")) {
@@ -26,7 +26,12 @@ export class OnlineLLM implements LLMStrategy {
   }
 
   async generate(prompt: string): Promise<string> {
+  if (this.model instanceof Cohere) {
+    return await this.model.call(prompt);
+  } else {
     const response = await this.model.call([["user", prompt]]);
     return response.content ?? response;
   }
+}
+
 }
