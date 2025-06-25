@@ -22,7 +22,10 @@ const App = () => {
       />
 
       {/* Main */}
-      <Dashboard />
+      <Dashboard 
+      selectedModel={selectedModel}
+      connectionMode={connectionMode}
+      />
     </div>
   );
 };

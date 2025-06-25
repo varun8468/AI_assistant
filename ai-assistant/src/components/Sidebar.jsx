@@ -28,11 +28,10 @@ export const Sidebar = ({
   ];
 
   const models = [
-    { id: 'gpt-4', name: 'GPT-4', description: 'Most capable model' },
-    { id: 'gpt-3.5', name: 'GPT-3.5 Turbo', description: 'Fast and efficient' },
-    { id: 'claude-3', name: 'Claude 3', description: 'Anthropic model' },
-    { id: 'gemini', name: 'Gemini Pro', description: 'Google model' }
+    { id: 'mistral-small', name: 'Mistral', description: 'Most capable model' },
+    { id: 'command-r-plus', name: 'Cohere', description: 'Fast and efficient' },
   ];
+  
 
   return (
     <div className="w-80 bg-gray-950 border-r border-gray-800 flex flex-col">
@@ -44,33 +43,6 @@ export const Sidebar = ({
     
 
       <div className="space-y-6 flex-1 p-6">
-       
-        {/* Model Selection */}
-        <div>
-          <label className="block text-gray-300 text-sm font-medium mb-3">
-            Select Model
-          </label>
-          <Dropdown
-            isOpen={isModelOpen}
-            setIsOpen={setIsModelOpen}
-            value={models.find(m => m.id === selectedModel)?.name || 'Select Model'}
-          >
-            {models.map((model) => (
-              <button
-                key={model.id}
-                onClick={() => {
-                  setSelectedModel(model.id);
-                  setIsModelOpen(false);
-                }}
-                className="w-full p-3 text-left hover:bg-gray-700 transition-colors border-b border-gray-700 last:border-b-0"
-              >
-                <div className="text-white text-sm font-medium">{model.name}</div>
-                <div className="text-gray-400 text-xs mt-1">{model.description}</div>
-              </button>
-            ))}
-          </Dropdown>
-        </div>
-
         {/* Connection Mode */}
         <div>
           <label className="block text-gray-300 text-sm font-medium mb-3">
@@ -108,6 +80,32 @@ export const Sidebar = ({
                 <div className="text-gray-400 text-xs">Local processing only</div>
               </div>
             </button>
+          </Dropdown>
+        </div>
+
+        {/* Model Selection */}
+        <div>
+          <label className="block text-gray-300 text-sm font-medium mb-3">
+            Select Model
+          </label>
+          <Dropdown
+            isOpen={isModelOpen}
+            setIsOpen={setIsModelOpen}
+            value={models.find(m => m.id === selectedModel)?.name || 'Select a model'}
+          >
+            {models.map((model) => (
+              <button
+                key={model.id}
+                onClick={() => {
+                  setSelectedModel(model.id);
+                  setIsModelOpen(false);
+                }}
+                className="w-full p-3 text-left hover:bg-gray-700 transition-colors border-b border-gray-700 last:border-b-0"
+              >
+                <div className="text-white text-sm font-medium">{model.name}</div>
+                <div className="text-gray-400 text-xs mt-1">{model.description}</div>
+              </button>
+            ))}
           </Dropdown>
         </div>
 
