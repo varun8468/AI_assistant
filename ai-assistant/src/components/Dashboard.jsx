@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { MessageSquare, Send, Loader2, Sparkles } from 'lucide-react';
+import Prompt from './Prompt';
 
 const makeAIRequest = async (question, connectionMode, selectedModel) => {
   try {
@@ -16,7 +17,7 @@ const makeAIRequest = async (question, connectionMode, selectedModel) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(requestBody)
-    });
+    });   
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -76,22 +77,29 @@ const Dashboard = ({ selectedModel, connectionMode }) => {
   };
 
   return (
-    <div className="flex-1 flex flex-col bg-gray-900 p-6 overflow-auto">
+    <div className="flex-1 flex flex-col bg-gray-900 p-6 pb-4 overflow-hidden">
       {/* Header */}
-      <div className="text-center mb-8">
-      <h2 className="text-3xl font-extrabold bg-gradient-to-r from-[#45c4e9] via-[#54b3a6] to-[#005c97] bg-clip-text text-transparent mb-2 tracking-wider">
-  AI Assistant
-</h2>
+
+      {!response.length > 0 ?
+
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-extrabold bg-gradient-to-r from-[#45c4e9] via-[#54b3a6] to-[#005c97] bg-clip-text text-transparent mb-2 tracking-wider">
+            AI Assistant
+          </h2>
 
 
-        <p className="text-gray-400">
-          Enter your prompt below and let AI help you with your tasks
-        </p>
-      </div>
+          <p className="text-gray-400">
+            Enter your prompt below and let AI help you with your tasks
+          </p>
+        </div>
+
+        : null}
+      
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full">
+      <div className="flex-1 flex flex-col max-w-5xl mx-auto w-full overflow-hidden">
         {/* Response Area */}
+        <div className="flex-1 overflow-y-auto mb-4 break-words dropdown-scroll ">
         {response && (
           <div className="mb-6 p-6 bg-gray-800 rounded-lg border border-gray-700">
             <div className="flex items-center gap-2 mb-3">
@@ -103,6 +111,7 @@ const Dashboard = ({ selectedModel, connectionMode }) => {
             </div>
           </div>
         )}
+        </div>  
 
         {/* Error */}
         {error && (
@@ -127,64 +136,16 @@ const Dashboard = ({ selectedModel, connectionMode }) => {
           </div>
         )}
 
-        {/* Input Section */}
-        <div className="mt-auto">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Prompt Input */}
-            <div className="relative mb-2">
-              <textarea
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Enter your prompt here..."
-                className="w-full p-4 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 resize-none focus:outline-none focus:ring-1 focus:ring-[#448cac] focus:border-transparent min-h-[120px] max-h-[300px]"
-                disabled={isLoading}
-              />
-              <div className="absolute bottom-3 right-3 text-gray-500 text-sm">
-                {prompt.length}/2000
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex justify-between items-center">
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setPrompt('')}
-                  className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
-                  disabled={isLoading}
-                >
-                  Clear
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setResponse('')}
-                  className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
-                  disabled={isLoading}
-                >
-                  Clear Response
-                </button>
-              </div>
-              
-              <button
-                type="submit"
-                disabled={!prompt.trim() || isLoading}
-                className="flex items-center gap-2 px-3 py-2 bg-[#448cac] hover:bg-[#42adc6] disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 size={18} className="animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <Send size={18} />
-                    Run Prompt
-                  </>
-                )}
-              </button>
-            </div>
-          </form>
+        {/* Prompt */}
+        <div className='sticy'>
+          <Prompt 
+          handleSubmit={handleSubmit}
+          setPrompt={setPrompt}
+          prompt={prompt}
+          handleKeyPress={handleKeyPress}
+          isLoading={isLoading}
+          setResponse={setResponse}
+          />
         </div>
       </div>
     </div>
