@@ -10,7 +10,7 @@ const Prompt =({handleSubmit,setPrompt, prompt, handleKeyPress, isLoading, setRe
                 onChange={(e) => setPrompt(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Enter your prompt here..."
-                className="w-full p-4 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 resize-none focus:outline-none focus:ring-1 focus:ring-[#448cac] focus:border-transparent min-h-[120px] max-h-[300px]"
+                className="w-full p-4 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 resize-none focus:outline-none focus:ring-1 focus:ring-[#448cac] focus:border-transparent min-h-[100px] max-h-[300px]"
                 disabled={isLoading}
               />
               <div className="absolute bottom-3 right-3 text-gray-500 text-sm">

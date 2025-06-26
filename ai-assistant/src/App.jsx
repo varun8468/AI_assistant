@@ -9,6 +9,8 @@ const App = () => {
   const [connectionMode, setConnectionMode] = useState('online');
   const [selectedChat, setSelectedChat] = useState('');
 
+  const [selectedChatHistory, setSelectedChatHistory] = useState([]);
+
   return (
     <div className="flex h-screen bg-gray-900">
       {/* Sidebar */}
@@ -19,12 +21,14 @@ const App = () => {
         setConnectionMode={setConnectionMode}
         selectedChat={selectedChat}
         setSelectedChat={setSelectedChat}
+        setSelectedChatHistory={setSelectedChatHistory}
       />
 
       {/* Main */}
       <Dashboard 
       selectedModel={selectedModel}
       connectionMode={connectionMode}
+      selectedChatHistory={selectedChatHistory}
       />
     </div>
   );
