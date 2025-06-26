@@ -2,7 +2,7 @@
 import path from "path";
 import { DocumentParser } from "./DocumentParser";
 import { PDFParser } from "./PDFParser";
-// import { WordParser } from "./WordParser";
+import { WordParser } from "./WordParser";
 // import { TextParser } from "./TextParser";
 
 export class ParserFactory {
@@ -12,8 +12,8 @@ export class ParserFactory {
     switch (ext) {
       case ".pdf":
         return new PDFParser();
-      // case ".docx":
-      //   return new WordParser();
+      case ".docx":
+        return new WordParser();
       // case ".txt":
       //   return new TextParser();
       default:
