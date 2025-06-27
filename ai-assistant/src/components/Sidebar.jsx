@@ -60,12 +60,12 @@ console.log(connectionMode, "model");
 
   const models = connectionMode === 'online'
     ? [
-        { id: 'mistral-small', name: 'Mistral', description: 'Most capable model' },
-        { id: 'command-r-plus', name: 'Cohere', description: 'Fast and efficient' },
+        { id: 'mistral-small', name: 'Mistral', description: 'Most accurate model' },
+        { id: 'command-r-plus', name: 'Cohere', description: 'Good for General Tasks' },
       ]
     : [
-        { id: 'local-llama', name: 'Llama Local', description: 'Runs on your device' },
-        { id: 'local-mini', name: 'MiniLM', description: 'Lightweight local model' },
+        { id: 'llama3.2', name: 'Llama', description: 'Runs on your device' },
+        { id: 'deepseek-r1:latest', name: 'Deepseek', description: 'Secured one' },
       ];
 
   return (
