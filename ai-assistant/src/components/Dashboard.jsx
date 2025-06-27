@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import { MessageSquare, Send, Loader2, Sparkles, User } from 'lucide-react';
 import Prompt from './Prompt';
+import API_BASE_URL from '../config/config';
 
-const makeAIRequest = async (question, connectionMode, selectedModel) => {
+const makeAIRequest = async (question, connectionMode, selectedModel, sessionId) => {
   try {
     const requestBody = {
       isOnline: connectionMode === 'online' ? 1 : 0,
       question: question.trim(),
-      llm: selectedModel
+      llm: selectedModel,
+      ...(sessionId && { sessionId })
     };
-
-    const response = await fetch('http://localhost:3000/ask', {
+    const response = await fetch(`${API_BASE_URL}/ask`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -36,11 +37,12 @@ const makeAIRequest = async (question, connectionMode, selectedModel) => {
   }
 };
 
-const Dashboard = ({ selectedModel, connectionMode, selectedChatHistory }) => {
+const Dashboard = ({ selectedModel, connectionMode, selectedChatHistory, sessionId }) => {
   const [prompt, setPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [conversation, setConversation] = useState([]);
   const [error, setError] = useState('');
+// console.log(conversation,"con");
 
 React.useEffect(() => {
   if (selectedChatHistory && selectedChatHistory.length > 0) {
@@ -50,35 +52,38 @@ React.useEffect(() => {
         content: msg.content
       }))
     );
+  } else{
+    setConversation([]);
   }
 }, [selectedChatHistory]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!prompt.trim()) return;
+  e.preventDefault();
+  if (!prompt.trim()) return;
 
-    setIsLoading(true);
-    setError('');
-    const userMessage = { role: 'user', content: prompt };
-    setConversation(prev => [...prev, userMessage]);
-    setPrompt('');
+  setIsLoading(true);
+  setError('');
+  const userMessage = { role: 'user', content: prompt };
+  setConversation(prev => [...prev, userMessage]);
+ 
 
-    try {
-      const result = await makeAIRequest(prompt, connectionMode, selectedModel);
-      if (result.success) {
-        setConversation(prev => [
-          ...prev,
-          { role: 'ai', content: result.data }
-        ]);
-      } else {
-        setError(result.error || 'Failed to get AI response');
-      }
-    } catch (error) {
-      setError(`Error: ${error.message}`);
-    } finally {
-      setIsLoading(false);
+  try {
+    const result = await makeAIRequest(prompt, connectionMode, selectedModel, sessionId);
+    if (result.success) {
+      setConversation(prev => [
+        ...prev,
+        { role: 'ai', content: result.data }
+      ]);
+      setPrompt('');
+    } else {
+      setError(result.error || 'Failed to get AI response');
     }
-  };
+  } catch (error) {
+    setError(`Error: ${error.message}`);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -104,16 +109,16 @@ React.useEffect(() => {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col max-w-5xl mx-auto w-full overflow-hidden">
         {/* Conversation Area */}
-        <div className="flex-1 overflow-y-auto mb-4 dropdown-scroll space-y-4">
+        <div className="flex-1 overflow-y-auto mb-4 dropdown-scroll space-y-4 px-2">
           {conversation.map((msg, idx) => (
             <div
               key={idx}
-              className={`flex ${msg.role === 'user' ? 'justify-start' : 'justify-end'}`}
+              className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               <div
                 className={`max-w-[70%] px-4 py-2 rounded-lg border text-sm leading-relaxed
                   ${msg.role === 'user'
-                    ? 'bg-gray-800 border-[#448cac] text-white rounded-bl-none'
+                    ? 'bg-gray-800 border-[#4b4c4c] text-white rounded-bl-none'
                     : ' border-[#42adc6] text-[#42adc6] rounded-br-none bg-slate-800'
                   }
                 `}
@@ -166,7 +171,6 @@ React.useEffect(() => {
             prompt={prompt}
             handleKeyPress={handleKeyPress}
             isLoading={isLoading}
-            setResponse={() => {}} // Not used anymore
           />
         </div>
       </div>

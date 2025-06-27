@@ -3,13 +3,14 @@ import { Sidebar } from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 
 
-// Dashboard Component
+// Main Component
 const App = () => {
-  const [selectedModel, setSelectedModel] = useState('gpt-4');
+  const [selectedModel, setSelectedModel] = useState('mistral-small');
   const [connectionMode, setConnectionMode] = useState('online');
   const [selectedChat, setSelectedChat] = useState('');
 
   const [selectedChatHistory, setSelectedChatHistory] = useState([]);
+  const [sessionId, setSessionId] = useState(null); 
 
   return (
     <div className="flex h-screen bg-gray-900">
@@ -22,6 +23,7 @@ const App = () => {
         selectedChat={selectedChat}
         setSelectedChat={setSelectedChat}
         setSelectedChatHistory={setSelectedChatHistory}
+        setSessionId={setSessionId}
       />
 
       {/* Main */}
@@ -29,6 +31,7 @@ const App = () => {
       selectedModel={selectedModel}
       connectionMode={connectionMode}
       selectedChatHistory={selectedChatHistory}
+      sessionId={sessionId}
       />
     </div>
   );

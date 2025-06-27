@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { MessageSquare, Cpu, Wifi, WifiOff } from 'lucide-react';
+import { MessageSquare, SquarePen, Wifi, WifiOff } from 'lucide-react';
 import { Dropdown } from './reusable/Dropdown';
 import Logo from '../assets/parkar.svg';
+import API_BASE_URL from "../config/config";
 
 export const Sidebar = ({ 
   selectedModel, 
@@ -10,17 +11,19 @@ export const Sidebar = ({
   setConnectionMode, 
   selectedChat, 
   setSelectedChat,
-  setSelectedChatHistory
+  setSelectedChatHistory,
+  setSessionId
 }) => {
   const [isModelOpen, setIsModelOpen] = useState(false);
   const [isModeOpen, setIsModeOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   const [chatHistory, setChatHistory] = useState([]);
+console.log(connectionMode, "model");
 
 
-  useEffect(() => {
-    fetch('http://localhost:3000/sessions')
+  const getHistory = () => {
+    fetch(`${API_BASE_URL}/sessions`)
       .then(res => res.json())
       .then(data => {
         if (data.sessions) {
@@ -30,15 +33,19 @@ export const Sidebar = ({
       .catch(err => {
         console.error('Failed to fetch sessions:', err);
       });
-  }, []);
+  };
+  useEffect(()=>{
+    getHistory();
+  },[])
 
-    // Fetch chat history when a chat is selected
+  // Fetch chat history
   useEffect(() => {
     if (selectedChat) {
-      fetch(`http://localhost:3000/history/${selectedChat}`)
+      fetch(`${API_BASE_URL}/history/${selectedChat}`)
         .then(res => res.json())
         .then(data => {
           setSelectedChatHistory(data.messages || []);
+          setSessionId(data.sessionId);
         })
         .catch(err => {
           console.error('Failed to fetch chat history:', err);
@@ -50,11 +57,16 @@ export const Sidebar = ({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedChat]);
 
-  const models = [
-    { id: 'mistral-small', name: 'Mistral', description: 'Most capable model' },
-    { id: 'command-r-plus', name: 'Cohere', description: 'Fast and efficient' },
-  ];
-  
+
+  const models = connectionMode === 'online'
+    ? [
+        { id: 'mistral-small', name: 'Mistral', description: 'Most capable model' },
+        { id: 'command-r-plus', name: 'Cohere', description: 'Fast and efficient' },
+      ]
+    : [
+        { id: 'local-llama', name: 'Llama Local', description: 'Runs on your device' },
+        { id: 'local-mini', name: 'MiniLM', description: 'Lightweight local model' },
+      ];
 
   return (
     <div className="w-80 bg-gray-950 border-r border-gray-800 flex flex-col">
@@ -66,6 +78,18 @@ export const Sidebar = ({
     
 
       <div className="space-y-6 flex-1 p-6">
+        {/* New chat */}
+        <div className="w-full flex items-center p-3 gap-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors border border-gray-700 text-white">
+          <SquarePen size={18} color="white" />
+          <button className="text-sm w-full text-start" 
+            onClick={() => {
+              setSelectedChat('');          
+              setSelectedChatHistory([]);  
+              setSessionId(null);  
+              getHistory();      
+            }}
+            >New Chat</button>
+        </div>
         {/* Connection Mode */}
         <div>
           <label className="block text-gray-300 text-sm font-medium mb-3">

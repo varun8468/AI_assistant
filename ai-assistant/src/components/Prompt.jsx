@@ -1,5 +1,5 @@
 import { Send, Loader2 } from 'lucide-react';
-const Prompt =({handleSubmit,setPrompt, prompt, handleKeyPress, isLoading, setResponse})=>{
+const Prompt =({handleSubmit,setPrompt, prompt, handleKeyPress, isLoading})=>{
     return(
          <div className="mt-auto px-1">
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -28,14 +28,6 @@ const Prompt =({handleSubmit,setPrompt, prompt, handleKeyPress, isLoading, setRe
                   disabled={isLoading}
                 >
                   Clear
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setResponse('')}
-                  className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
-                  disabled={isLoading}
-                >
-                  Clear Response
                 </button>
               </div>
               
