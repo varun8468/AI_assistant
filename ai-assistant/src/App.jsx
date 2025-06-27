@@ -32,6 +32,7 @@ const App = () => {
       connectionMode={connectionMode}
       selectedChatHistory={selectedChatHistory}
       sessionId={sessionId}
+      setSessionId={setSessionId}
       />
     </div>
   );
