@@ -5,7 +5,7 @@ exports.ParserFactory = void 0;
 var path_1 = require("path");
 var PDFParser_1 = require("./PDFParser");
 var WordParser_1 = require("./WordParser");
-// import { TextParser } from "./TextParser";
+var TextParser_1 = require("./TextParser");
 var ParserFactory = /** @class */ (function () {
     function ParserFactory() {
     }
@@ -16,8 +16,8 @@ var ParserFactory = /** @class */ (function () {
                 return new PDFParser_1.PDFParser();
             case ".docx":
               return new WordParser_1.WordParser();
-            // case ".txt":
-            //   return new TextParser();
+            case ".txt":
+              return new TextParser_1.TextParser();
             default:
                 throw new Error("Unsupported file type: ".concat(ext));
         }
