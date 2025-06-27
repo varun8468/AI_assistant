@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import { MessageSquare, Send, Loader2, Sparkles } from 'lucide-react';
+import { MessageSquare, Send, Loader2, Sparkles, User } from 'lucide-react';
 import Prompt from './Prompt';
+import API_BASE_URL from '../config/config';
 
-const makeAIRequest = async (question, connectionMode, selectedModel) => {
+const makeAIRequest = async (question, connectionMode, selectedModel, sessionId) => {
   try {
     const requestBody = {
       isOnline: connectionMode === 'online' ? 1 : 0,
       question: question.trim(),
-      llm: selectedModel
+      llm: selectedModel,
+      ...(sessionId && { sessionId })
     };
-
-    console.log('API Request:', requestBody);
-    const response = await fetch('http://localhost:3000/ask', {
+    const response = await fetch(`${API_BASE_URL}/ask`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -30,7 +30,6 @@ const makeAIRequest = async (question, connectionMode, selectedModel) => {
     };
 
   } catch (error) {
-    console.error('API Error:', error);
     return {
       success: false,
       error: error.message
@@ -38,36 +37,53 @@ const makeAIRequest = async (question, connectionMode, selectedModel) => {
   }
 };
 
-
-const Dashboard = ({ selectedModel, connectionMode }) => {
+const Dashboard = ({ selectedModel, connectionMode, selectedChatHistory, sessionId }) => {
   const [prompt, setPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [response, setResponse] = useState('');
+  const [conversation, setConversation] = useState([]);
   const [error, setError] = useState('');
+// console.log(conversation,"con");
+
+React.useEffect(() => {
+  if (selectedChatHistory && selectedChatHistory.length > 0) {
+    setConversation(
+      selectedChatHistory.map(msg => ({
+        role: msg.type === 'user' ? 'user' : 'ai',
+        content: msg.content
+      }))
+    );
+  } else{
+    setConversation([]);
+  }
+}, [selectedChatHistory]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!prompt.trim()) return;
+  e.preventDefault();
+  if (!prompt.trim()) return;
 
-    setIsLoading(true);
-    setError('');
-    
-    try {
-      const result = await makeAIRequest(prompt, connectionMode, selectedModel);
-      
-      if (result.success) {
-        setResponse(result.data.response || result.data.message || JSON.stringify(result.data));
-      } else {
-        setError(result.error || 'Failed to get AI response');
-        setResponse('');
-      }
-    } catch (error) {
-      setError(`Error: ${error.message}`);
-      setResponse('');
-    } finally {
-      setIsLoading(false);
+  setIsLoading(true);
+  setError('');
+  const userMessage = { role: 'user', content: prompt };
+  setConversation(prev => [...prev, userMessage]);
+ 
+
+  try {
+    const result = await makeAIRequest(prompt, connectionMode, selectedModel, sessionId);
+    if (result.success) {
+      setConversation(prev => [
+        ...prev,
+        { role: 'ai', content: result.data }
+      ]);
+      setPrompt('');
+    } else {
+      setError(result.error || 'Failed to get AI response');
     }
-  };
+  } catch (error) {
+    setError(`Error: ${error.message}`);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -79,39 +95,60 @@ const Dashboard = ({ selectedModel, connectionMode }) => {
   return (
     <div className="flex-1 flex flex-col bg-gray-900 p-6 pb-4 overflow-hidden">
       {/* Header */}
-
-      {!response.length > 0 ?
-
+      {conversation.length === 0 && !isLoading && (
         <div className="text-center mb-8">
           <h2 className="text-3xl font-extrabold bg-gradient-to-r from-[#45c4e9] via-[#54b3a6] to-[#005c97] bg-clip-text text-transparent mb-2 tracking-wider">
             AI Assistant
           </h2>
-
-
           <p className="text-gray-400">
             Enter your prompt below and let AI help you with your tasks
           </p>
         </div>
-
-        : null}
-      
+      )}
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col max-w-5xl mx-auto w-full overflow-hidden">
-        {/* Response Area */}
-        <div className="flex-1 overflow-y-auto mb-4 break-words dropdown-scroll ">
-        {response && (
-          <div className="mb-6 p-6 bg-gray-800 rounded-lg border border-gray-700">
-            <div className="flex items-center gap-2 mb-3">
-              <MessageSquare size={18} className="text-[#42adc6]" />
-              <span className="text-[#42adc6] font-medium">AI Response</span>
+        {/* Conversation Area */}
+        <div className="flex-1 overflow-y-auto mb-4 dropdown-scroll space-y-4 px-2">
+          {conversation.map((msg, idx) => (
+            <div
+              key={idx}
+              className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+            >
+              <div
+                className={`max-w-[70%] px-4 py-2 rounded-lg border text-sm leading-relaxed
+                  ${msg.role === 'user'
+                    ? 'bg-gray-800 border-[#4b4c4c] text-white rounded-bl-none'
+                    : ' border-[#42adc6] text-[#42adc6] rounded-br-none bg-slate-800'
+                  }
+                `}
+              >
+                <div className="flex items-center gap-2mb-1">
+                  {msg.role === 'user' ? (
+                    <div className='mb-2 flex items-center gap-2'>
+                      <User size={16} className="text-blue-400" />
+                      <span className="font-semibold text-blue-300">You</span>
+                    </div>
+                  ) : (
+                    <div className='mb-2 flex items-center gap-2'>
+                      <Sparkles size={16} className="text-[#42adc6]" />
+                      <span className="font-semibold text-[#42adc6]">AI</span>
+                    </div>
+                  )}
+                </div>
+                <div className="whitespace-pre-wrap">{msg.content}</div>
+              </div>
             </div>
-            <div className="text-gray-200 whitespace-pre-wrap leading-relaxed">
-              {response}
+          ))}
+          {isLoading && (
+            <div className="flex justify-end">
+              <div className="max-w-[70%] px-4 py-3 rounded-lg border border-[#42adc6] bg-[#1a2e2e] text-[#42adc6] rounded-br-none flex items-center gap-2">
+                <Loader2 size={16} className="animate-spin" />
+                <span>AI is thinking...</span>
+              </div>
             </div>
-          </div>
-        )}
-        </div>  
+          )}
+        </div>
 
         {/* Error */}
         {error && (
@@ -126,25 +163,14 @@ const Dashboard = ({ selectedModel, connectionMode }) => {
           </div>
         )}
 
-        {/* Loading State */}
-        {isLoading && (
-          <div className="mb-6 p-6 bg-gray-800 rounded-lg border border-gray-700">
-            <div className="flex items-center gap-3">
-              <Loader2 size={18} className="text-[#42adc6] animate-spin" />
-              <span className="text-[#42adc6] font-medium">AI is thinking...</span>
-            </div>
-          </div>
-        )}
-
         {/* Prompt */}
-        <div className='sticy'>
+        <div className='sticky bottom-0 bg-gray-900'>
           <Prompt 
-          handleSubmit={handleSubmit}
-          setPrompt={setPrompt}
-          prompt={prompt}
-          handleKeyPress={handleKeyPress}
-          isLoading={isLoading}
-          setResponse={setResponse}
+            handleSubmit={handleSubmit}
+            setPrompt={setPrompt}
+            prompt={prompt}
+            handleKeyPress={handleKeyPress}
+            isLoading={isLoading}
           />
         </div>
       </div>

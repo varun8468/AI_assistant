@@ -1,7 +1,8 @@
-import { useState } from "react";
-import { MessageSquare, Cpu, Wifi, WifiOff } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { MessageSquare, SquarePen, Wifi, WifiOff } from 'lucide-react';
 import { Dropdown } from './reusable/Dropdown';
 import Logo from '../assets/parkar.svg';
+import API_BASE_URL from "../config/config";
 
 export const Sidebar = ({ 
   selectedModel, 
@@ -9,29 +10,63 @@ export const Sidebar = ({
   connectionMode, 
   setConnectionMode, 
   selectedChat, 
-  setSelectedChat 
+  setSelectedChat,
+  setSelectedChatHistory,
+  setSessionId
 }) => {
   const [isModelOpen, setIsModelOpen] = useState(false);
   const [isModeOpen, setIsModeOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
 
-  
-  const chatHistory = [
-    { id: '1', title: 'Code Review Discussion', timestamp: '2 hours ago' },
-    { id: '2', title: 'API Integration Help', timestamp: '1 day ago' },
-    { id: '3', title: 'Database Design Questions', timestamp: '2 days ago' },
-    { id: '4', title: 'React Component Optimization', timestamp: '3 days ago' },
-    { id: '5', title: 'Algorithm Explanation', timestamp: '1 week ago' },
-    { id: '6', title: 'Bug Troubleshooting Session', timestamp: '1 week ago' },
-    { id: '7', title: 'Performance Analysis', timestamp: '2 weeks ago' },
-    { id: '8', title: 'UI/UX Design Discussion', timestamp: '2 weeks ago' }
-  ];
+  const [chatHistory, setChatHistory] = useState([]);
+console.log(connectionMode, "model");
 
-  const models = [
-    { id: 'mistral-small', name: 'Mistral', description: 'Most capable model' },
-    { id: 'command-r-plus', name: 'Cohere', description: 'Fast and efficient' },
-  ];
-  
+
+  const getHistory = () => {
+    fetch(`${API_BASE_URL}/sessions`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.sessions) {
+          setChatHistory(data.sessions);
+        }
+      })
+      .catch(err => {
+        console.error('Failed to fetch sessions:', err);
+      });
+  };
+  useEffect(()=>{
+    getHistory();
+  },[])
+
+  // Fetch chat history
+  useEffect(() => {
+    if (selectedChat) {
+      fetch(`${API_BASE_URL}/history/${selectedChat}`)
+        .then(res => res.json())
+        .then(data => {
+          setSelectedChatHistory(data.messages || []);
+          setSessionId(data.sessionId);
+        })
+        .catch(err => {
+          console.error('Failed to fetch chat history:', err);
+          setSelectedChatHistory([]);
+        });
+    } else {
+      setSelectedChatHistory([]);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedChat]);
+
+
+  const models = connectionMode === 'online'
+    ? [
+        { id: 'mistral-small', name: 'Mistral', description: 'Most capable model' },
+        { id: 'command-r-plus', name: 'Cohere', description: 'Fast and efficient' },
+      ]
+    : [
+        { id: 'local-llama', name: 'Llama Local', description: 'Runs on your device' },
+        { id: 'local-mini', name: 'MiniLM', description: 'Lightweight local model' },
+      ];
 
   return (
     <div className="w-80 bg-gray-950 border-r border-gray-800 flex flex-col">
@@ -43,6 +78,18 @@ export const Sidebar = ({
     
 
       <div className="space-y-6 flex-1 p-6">
+        {/* New chat */}
+        <div className="w-full flex items-center p-3 gap-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors border border-gray-700 text-white">
+          <SquarePen size={18} color="white" />
+          <button className="text-sm w-full text-start" 
+            onClick={() => {
+              setSelectedChat('');          
+              setSelectedChatHistory([]);  
+              setSessionId(null);  
+              getHistory();      
+            }}
+            >New Chat</button>
+        </div>
         {/* Connection Mode */}
         <div>
           <label className="block text-gray-300 text-sm font-medium mb-3">
@@ -110,27 +157,29 @@ export const Sidebar = ({
         </div>
 
         {/* Chat History */}
-        <div className="flex-1">
+         <div className="flex-1">
           <label className="block text-gray-300 text-sm font-medium mb-3">
             Chat History
           </label>
           <Dropdown
             isOpen={isChatOpen}
             setIsOpen={setIsChatOpen}
-            value={selectedChat || 'Select a chat'}
+            value={
+              chatHistory.find(chat => chat.id === selectedChat)?.name ||
+              'Select a chat'
+            }
             icon={MessageSquare}
           >
             {chatHistory.map((chat) => (
               <button
                 key={chat.id}
                 onClick={() => {
-                  setSelectedChat(chat.title);
+                  setSelectedChat(chat.id);
                   setIsChatOpen(false);
                 }}
                 className="w-full p-3 text-left hover:bg-gray-700 transition-colors border-b border-gray-700 last:border-b-0"
               >
-                <div className="text-white text-sm font-medium truncate">{chat.title}</div>
-                <div className="text-gray-400 text-xs mt-1">{chat.timestamp}</div>
+                <div className="text-white text-sm font-medium truncate">{chat.name}</div>
               </button>
             ))}
           </Dropdown>

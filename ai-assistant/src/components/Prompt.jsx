@@ -1,5 +1,5 @@
 import { Send, Loader2 } from 'lucide-react';
-const Prompt =({handleSubmit,setPrompt, prompt, handleKeyPress, isLoading, setResponse})=>{
+const Prompt =({handleSubmit,setPrompt, prompt, handleKeyPress, isLoading})=>{
     return(
          <div className="mt-auto px-1">
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -10,7 +10,7 @@ const Prompt =({handleSubmit,setPrompt, prompt, handleKeyPress, isLoading, setRe
                 onChange={(e) => setPrompt(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Enter your prompt here..."
-                className="w-full p-4 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 resize-none focus:outline-none focus:ring-1 focus:ring-[#448cac] focus:border-transparent min-h-[120px] max-h-[300px]"
+                className="w-full p-4 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 resize-none focus:outline-none focus:ring-1 focus:ring-[#448cac] focus:border-transparent min-h-[100px] max-h-[300px]"
                 disabled={isLoading}
               />
               <div className="absolute bottom-3 right-3 text-gray-500 text-sm">
@@ -28,14 +28,6 @@ const Prompt =({handleSubmit,setPrompt, prompt, handleKeyPress, isLoading, setRe
                   disabled={isLoading}
                 >
                   Clear
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setResponse('')}
-                  className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
-                  disabled={isLoading}
-                >
-                  Clear Response
                 </button>
               </div>
               
