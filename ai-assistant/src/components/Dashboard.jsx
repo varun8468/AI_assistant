@@ -3,7 +3,7 @@ import { MessageSquare, Send, Loader2, Sparkles, User } from 'lucide-react';
 import Prompt from './Prompt';
 import API_BASE_URL from '../config/config';
 
-const makeAIRequest = async (question, connectionMode, selectedModel, sessionId) => {
+const makeAIRequest = async (question, connectionMode, selectedModel, sessionId,setSessionId) => {
   try {
     const requestBody = {
       isOnline: connectionMode === 'online' ? 1 : 0,
@@ -24,6 +24,7 @@ const makeAIRequest = async (question, connectionMode, selectedModel, sessionId)
     }
 
     const data = await response.json();
+    setSessionId(data.sessionId)
     return {
       success: true,
       data: data.answer
@@ -37,7 +38,7 @@ const makeAIRequest = async (question, connectionMode, selectedModel, sessionId)
   }
 };
 
-const Dashboard = ({ selectedModel, connectionMode, selectedChatHistory, sessionId }) => {
+const Dashboard = ({ selectedModel, connectionMode, selectedChatHistory, sessionId, setSessionId }) => {
   const [prompt, setPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [conversation, setConversation] = useState([]);
@@ -68,7 +69,7 @@ React.useEffect(() => {
  
 
   try {
-    const result = await makeAIRequest(prompt, connectionMode, selectedModel, sessionId);
+    const result = await makeAIRequest(prompt, connectionMode, selectedModel, sessionId, setSessionId);
     if (result.success) {
       setConversation(prev => [
         ...prev,
