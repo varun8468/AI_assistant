@@ -80,6 +80,22 @@ app.post("/ask", async (req, res) => {
     const context = results.map((doc) => doc.pageContent).join("\n");
     console.log(context);
 
+    // Extract unique document names from the results
+    const referenceDocuments = [...new Set(
+      results
+        .map(doc => doc.metadata?.filename || doc.metadata?.source)
+        .filter(filename => filename) // Remove null/undefined values
+        .map(filename => {
+          // If it's a full path, extract just the filename
+          if (typeof filename === 'string') {
+            return filename.includes('/') || filename.includes('\\') 
+              ? filename.split(/[/\\]/).pop() 
+              : filename;
+          }
+          return filename;
+        })
+    )];
+
     // Get memory for this session
     const memory = await getMemoryForSession(currentSessionId);
     
@@ -113,7 +129,8 @@ Answer:`;
 
     res.json({ 
       answer, 
-      sessionId: currentSessionId 
+      sessionId: currentSessionId,
+      referenceDocuments: referenceDocuments
     });
   } catch (err) {
     console.error(err);

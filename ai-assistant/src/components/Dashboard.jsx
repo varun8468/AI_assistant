@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageSquare, Send, Loader2, Sparkles, User } from 'lucide-react';
+import { MessageSquare, Loader2, Sparkles, User } from 'lucide-react';
 import Prompt from './Prompt';
 import API_BASE_URL from '../config/config';
 
@@ -27,7 +27,8 @@ const makeAIRequest = async (question, connectionMode, selectedModel, sessionId,
     setSessionId(data.sessionId)
     return {
       success: true,
-      data: data.answer
+      data: data.answer,
+      references: data.referenceDocuments || []
     };
 
   } catch (error) {
@@ -43,14 +44,16 @@ const Dashboard = ({ selectedModel, connectionMode, selectedChatHistory, session
   const [isLoading, setIsLoading] = useState(false);
   const [conversation, setConversation] = useState([]);
   const [error, setError] = useState('');
-// console.log(conversation,"con");
+  const [references, setReferences] = useState([]);
+console.log(references,"con");
 
 React.useEffect(() => {
   if (selectedChatHistory && selectedChatHistory.length > 0) {
     setConversation(
       selectedChatHistory.map(msg => ({
         role: msg.type === 'user' ? 'user' : 'ai',
-        content: msg.content
+        content: msg.content,
+        references: msg.references || []
       }))
     );
   } else{
@@ -70,12 +73,15 @@ React.useEffect(() => {
 
   try {
     const result = await makeAIRequest(prompt, connectionMode, selectedModel, sessionId, setSessionId);
+    console.log(result);
+    
     if (result.success) {
       setConversation(prev => [
         ...prev,
-        { role: 'ai', content: result.data }
+        { role: 'ai', content: result.data, references: result.references || [] }
       ]);
       setPrompt('');
+      setReferences(result.references || []);
     } else {
       setError(result.error || 'Failed to get AI response');
     }
@@ -102,7 +108,7 @@ React.useEffect(() => {
             AI Assistant
           </h2>
           <p className="text-gray-400">
-            Enter your prompt below and let AI help you with your tasks
+            Enter your prompt below and let AI help you with your questions
           </p>
         </div>
       )}
@@ -138,6 +144,26 @@ React.useEffect(() => {
                   )}
                 </div>
                 <div className="whitespace-pre-wrap">{msg.content}</div>
+                {/* references*/}
+                {msg.role === 'ai' && msg.references && msg.references.length > 0 && (
+                  <div className="mt-3 text-xs text-white rounded py-2">
+                    <div className="font-semibold text-[#42adc6] mb-2">Reference:</div>
+                    <ul className="list-disc pl-5 text-[#42adc6]">
+                      {msg.references.map((ref, i) => (
+                        <li key={i}>
+                          <a
+                            href={`https://parkar.sharepoint.com/:b:/r/Hackathon_2025/Parkar%20Policies/${encodeURIComponent(ref)}?csf=1&web=1`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline hover:text-white"
+                          >
+                            {ref}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             </div>
           ))}
