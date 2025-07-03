@@ -16,7 +16,7 @@ export const Dropdown = ({ isOpen, setIsOpen, value, children }) => (
       />
     </button>
     {isOpen && (
-      <div className="absolute top-full left-0 right-0 mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-10 max-h-64 overflow-y-auto dropdown-scroll">
+      <div className="absolute top-full left-0 right-0 mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-10 max-h-44 overflow-y-auto dropdown-scroll">
         {children}
       </div>
     )}
